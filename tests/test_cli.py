@@ -1,39 +1,41 @@
-"""Tests for analyzer_tools.cli module."""
+"""Tests for analyzer_tools.cli console-script wrappers.
 
-import pytest
-from unittest.mock import patch
-from click.testing import CliRunner
+The package no longer ships a top-level ``analyzer-tools`` browser command (the
+static tool registry it served was retired in favour of per-command ``--help``
+and the skill docs). What remains in ``cli.py`` is the set of thin ``*_cli``
+wrappers each console script in pyproject.toml points at; this guards that they
+import cleanly and stay in sync with the declared entry points.
+"""
 
-from analyzer_tools.cli import main
+import importlib
 
+from analyzer_tools import cli
 
-class TestCliMain:
-    """Test the main CLI function."""
-    
-    @patch('analyzer_tools.cli.print_tool_overview')
-    def test_list_tools_option(self, mock_overview):
-        """Test --list-tools option."""
-        runner = CliRunner()
-        result = runner.invoke(main, ['--list-tools'])
-        
-        # Should call print_tool_overview
-        assert result.exit_code == 0
-        mock_overview.assert_called_once()
-    
-class TestCliHelpers:
-    """Test CLI helper functions and edge cases."""
-
-
-class TestCliIntegration:
-    """Integration tests for CLI functionality."""
-
-    def test_help_option(self):
-        """Test --help option."""
-        runner = CliRunner()
-        result = runner.invoke(main, ['--help'])
-
-        assert result.exit_code == 0
-        assert "Neutron Reflectometry Data Analysis Tools" in result.output
+# console-script name -> cli wrapper attribute (mirrors [project.scripts])
+WRAPPERS = {
+    "run-fit": "run_fit_cli",
+    "assess-partial": "assess_partial_cli",
+    "assess-result": "result_assessor_cli",
+    "create-model": "create_model_cli",
+    "theta-offset": "theta_offset_cli",
+    "analyzer-batch": "batch_cli",
+    "simple-reduction": "simple_reduction_cli",
+    "analyze-sample": "analyze_sample_cli",
+    "check-llm": "check_llm_cli",
+    "plan-data": "plan_data_cli",
+}
 
 
+def test_cli_module_imports_cleanly():
+    importlib.reload(cli)
 
+
+def test_all_wrappers_present_and_callable():
+    for script, attr in WRAPPERS.items():
+        assert callable(getattr(cli, attr)), f"missing/uncallable wrapper for {script}: {attr}"
+
+
+def test_no_registry_browser_remains():
+    # The retired registry browser must not reappear.
+    for gone in ("main", "print_tool_overview"):
+        assert not hasattr(cli, gone), f"{gone} should have been removed with the registry"

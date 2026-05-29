@@ -85,8 +85,7 @@ under `reports/`.
 - **`check-llm`** — Verify that AuRE and the configured LLM endpoint are
   reachable.
 
-Run `analyzer-tools --list-tools` for the full registry, or
-`analyzer-tools --help-tool <name>` for any single tool. Per-workflow
+Run any command with `--help` for its options and examples. Per-workflow
 documentation lives under [`analyzer_tools/skills/`](analyzer_tools/skills/).
 
 ## Installation
@@ -141,7 +140,7 @@ defaults:
 
 jobs:
   - name: <unique label>     # used for logs and --jobs filter
-    tool: <tool name>        # see analyzer-tools --list-tools
+    tool: <tool name>        # one of the console scripts (run-fit, create-model, …)
     args: [<argv …>]         # exactly as on the command line
 ```
 

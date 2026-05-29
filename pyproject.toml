@@ -52,7 +52,6 @@ Homepage = "https://github.com/neutrons-ai/nr-analyzer"
 Repository = "https://github.com/neutrons-ai/nr-analyzer"
 
 [project.scripts]
-analyzer-tools = "analyzer_tools.cli:main"
 run-fit = "analyzer_tools.cli:run_fit_cli"
 assess-partial = "analyzer_tools.cli:assess_partial_cli"
 assess-result = "analyzer_tools.cli:result_assessor_cli"

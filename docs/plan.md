@@ -239,7 +239,7 @@ pipeline).
 2. Update `pyproject.toml` `[project.scripts]` — drop `create-temporary-model`
    (if user confirms), add `analyze-sample`. Add `[project.optional-dependencies]
    aure = ["aure @ git+https://github.com/neutrons-ai/aure.git"]`.
-3. Update `analyzer_tools/registry.py` TOOLS dict + `batch.py TOOL_COMMANDS`.
+3. Update `batch.py` `TOOL_COMMANDS`.
 4. **Update `analyzer_tools/mcp_server.py` if present (not inspected yet) so
    Copilot / Claude can drive the orchestrator via MCP.** → **REMOVED**:
    delete `analyzer_tools/mcp_server.py` and any MCP entry points / deps
@@ -257,7 +257,6 @@ pipeline).
   legacy fallback.
 - `analyzer_tools/analysis/result_assessor.py` — append `aure evaluate`.
 - `analyzer_tools/analysis/partial_data_assessor.py` — refactor + optional LLM.
-- `analyzer_tools/registry.py` — update TOOLS entries.
 - `analyzer_tools/batch.py` — `TOOL_COMMANDS` mapping.
 - `analyzer_tools/cli.py` — register `analyze-sample`, drop deprecated.
 - `pyproject.toml` — scripts, optional deps, version bump.
@@ -281,7 +280,7 @@ pipeline).
 ## Verification
 
 1. `pytest -q` green after every phase.
-2. `analyzer-tools --list-tools` shows updated catalog.
+2. Each tool's `--help` reflects the change.
 3. Manual end-to-end on `tests/sample_data/` set 218281: partial QC → AuRE
    model generation → fit → assessment, produces `sample_218281.md` with
    all four sections.
