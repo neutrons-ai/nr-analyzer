@@ -4,19 +4,19 @@ description: >
   Neutron reflectometry data layout, file naming conventions, column formats,
   and how to discover available data. USE FOR: understanding where data lives,
   interpreting file names, reading data columns, configuring paths. 
-  DO NOT USE FOR: fitting or reducing data (see fitting or time-resolved skills).
+  DO NOT USE FOR: fitting or reducing data (see the fitting skill).
 ---
 
 # Data Organization
 
 ## Directory Layout
 
-All paths are relative to the repository root and configurable via `.env` (or environment variables).
+All paths are relative to the **project root** (the current working directory by default) and configurable via `.env` (or environment variables); see Configuration below.
 
 | Directory | Default Path | Contents |
 |-----------|-------------|----------|
-| Combined data | `data/combined/` | Final reduced reflectivity curves (one file per measurement set) |
-| Partial data | `data/partial/` | Individual partial curves (usually 3 per set, before combining) |
+| Combined data | `rawdata/` | Final reduced reflectivity curves (one file per measurement set) |
+| Partial data | falls back to combined (`rawdata/`) | Individual partial curves (usually 3 per set, before combining) |
 | Models | `models/` | Python model files for refl1d fitting |
 | Results | `results/` | Fit outputs organized by run |
 | Reports | `reports/` | Markdown analysis reports with plots |
@@ -96,19 +96,12 @@ ANALYZER_COMBINED_DATA_TEMPLATE=REFL_{set_id}_combined_data_auto.txt
 
 `{set_id}` is replaced at runtime.
 
-## Discovering Available Data
-
-```bash
-# List all available data files (combined + partial)
-analyzer-tools --show-data
-```
-
-This scans the configured data directories and lists all recognized data files with their set IDs.
-
 ## Key Concepts
 
 - A **set** is a complete reflectivity measurement, identified by `set_id`
 - A set is built from **parts** (typically 3) measured at different angular settings to cover different Q ranges
 - Parts **overlap** in Q — the overlap quality can be checked with
   the `assess-partial` tool (see the partial-assessment skill)
-- After verifying overlap quality, parts are **combined** into a single reflectivity curve
+- After verifying overlap quality, parts are **combined** into a single
+  reflectivity curve — the reduction normally emits the combined file, or build
+  it from the partials with `assemble-partials <set_id>` (Mantid-free)

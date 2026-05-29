@@ -31,7 +31,9 @@ Stages, in order:
    is **not** invoked here; precompute offsets separately if you need them.)
 3. **reduction-issue gate** — if any overlap χ² exceeds `--chi2-threshold`
    (default `3.0`) or any `|θ-offset|` exceeds `--offset-threshold-deg`
-   (default `0.01`), the pipeline **halts** and writes:
+   (default `0.02`, the "large" band from the theta-offset skill — offsets
+   of 0.005–0.02° are typical and just applied during reduction), the
+   pipeline **halts** and writes:
    - `reports/sample_<tag>/reduction_issues.md`
    - `reports/sample_<tag>/reduction_batch.yaml` (an `analyzer-batch` manifest
      with one `simple-reduction` job per segment — review and run it manually;
@@ -108,7 +110,7 @@ partial of one set_id, or all combined).
 | `--skip-fit` | Stop after the reduction gate (useful for pre-checks). |
 | `--no-reduction-gate` | Continue even if overlap χ² or θ-offset is bad. |
 | `--chi2-threshold 3.0` | Overlap χ² threshold for "block". |
-| `--offset-threshold-deg 0.01` | θ-offset threshold for "block". |
+| `--offset-threshold-deg 0.02` | θ-offset threshold for "block" (the "large" band; 0.005–0.02° is typical). |
 | `--skip-aure-eval` | Skip the `aure evaluate` LLM pass. |
 | `--results-dir PATH` | Override `ANALYZER_RESULTS_DIR`. |
 | `--reports-dir PATH` | Override `ANALYZER_REPORTS_DIR`. |

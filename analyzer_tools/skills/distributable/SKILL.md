@@ -1,10 +1,9 @@
 ---
 name: neutron-reflectometry-analyzer
 description: >
-  Neutron reflectometry analysis using the analyzer-tools package (refl1d/bumps).
+  Neutron reflectometry analysis using the nr-analyzer package (refl1d/bumps).
   USE FOR: fitting reflectivity data, assessing fit quality, evaluating partial data
-  overlap, computing theta offsets, creating or adjusting models, time-resolved
-  neutron reflectometry, data packaging.
+  overlap, computing theta offsets, and creating or adjusting models.
   DO NOT USE FOR: general Python questions unrelated to reflectometry.
 argument-hint: 'Describe what you want to analyze (e.g., "fit set 218281 with cu_thf model")'
 ---
@@ -22,7 +21,7 @@ pip install -e /path/to/analyzer
 Verify installation:
 
 ```bash
-analyzer-tools --help
+analyze-sample --help
 ```
 
 ---
@@ -259,6 +258,17 @@ assess-partial <SET_ID>
 Calculates overlap χ² between adjacent parts. Thresholds: < 1.5 good,
 1.5–3.0 acceptable, > 3.0 investigate.
 
+#### `assemble-partials` — Combine partial segments into a combined R(Q) file
+
+```bash
+assemble-partials <SET_ID>            # -> <combined-dir>/REFL_<SET_ID>_combined_data_auto.txt
+assemble-partials <SET_ID> --scale    # rescale each segment to its predecessor's overlap first
+```
+
+A Mantid-free way to produce the combined file (segments from one reduction are
+usually already consistently scaled, so the default just concatenates and sorts
+by Q). Reports the adjacent-overlap χ². Supports `--json` and `--result-out`.
+
 ### Theta offsets
 
 #### `theta-offset` — Compute angular offsets from NeXus event files
@@ -268,28 +278,6 @@ theta-offset <NEXUS_FILE> --db <DIRECT_BEAM_FILE>
 ```
 
 Also computes the gravity-induced angular offset at the mean neutron wavelength.
-
-### Time-resolved / EIS
-
-#### `eis-intervals` — Extract EIS step intervals
-
-```bash
-eis-intervals <EIS_DATA_FILE>
-```
-
-#### `eis-reduce-events` — Reduce neutron events for time-resolved analysis
-
-```bash
-eis-reduce-events <EVENT_FILE> --intervals <INTERVALS_JSON>
-```
-
-### Data packaging
-
-#### `iceberg-packager` — Package time-resolved data as Iceberg/Parquet
-
-```bash
-iceberg-packager <DATA_DIR> --output <OUTPUT_DIR>
-```
 
 ### Batch processing
 

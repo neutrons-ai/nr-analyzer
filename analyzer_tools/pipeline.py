@@ -603,7 +603,7 @@ def run_pipeline(
     results_root: str,
     reports_root: str,
     chi2_threshold: float = 3.0,
-    offset_threshold_deg: float = 0.01,
+    offset_threshold_deg: float = 0.02,
     reduction_gate: bool = True,
     llm_commentary: Optional[bool] = None,
     skip_aure_eval: bool = False,
@@ -841,7 +841,7 @@ def run_pipeline(
 )
 @click.option("--reduction-gate/--no-reduction-gate", default=True, show_default=True)
 @click.option("--chi2-threshold", type=float, default=3.0, show_default=True)
-@click.option("--offset-threshold-deg", type=float, default=0.01, show_default=True)
+@click.option("--offset-threshold-deg", type=float, default=0.02, show_default=True)
 @click.option("--llm-commentary/--no-llm-commentary", default=None)
 @click.option("--skip-aure-eval", is_flag=True, default=False)
 @click.option("--skip-partial", is_flag=True, default=False)

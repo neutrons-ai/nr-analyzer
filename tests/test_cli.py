@@ -20,6 +20,7 @@ WRAPPERS = {
     "theta-offset": "theta_offset_cli",
     "analyzer-batch": "batch_cli",
     "simple-reduction": "simple_reduction_cli",
+    "assemble-partials": "assemble_partials_cli",
     "analyze-sample": "analyze_sample_cli",
     "check-llm": "check_llm_cli",
     "plan-data": "plan_data_cli",

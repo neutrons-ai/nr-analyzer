@@ -45,6 +45,7 @@ TOOL_COMMANDS = {
     "create-model":           "analyzer_tools.analysis.create_model",
     "theta-offset":           "analyzer_tools.analysis.theta_offset",
     "simple-reduction":       "analyzer_tools.reduction.reduction",
+    "assemble-partials":      "analyzer_tools.analysis.assemble",
     "analyze-sample":         "analyzer_tools.pipeline",
     "check-llm":              "analyzer_tools.analysis.check_llm",
 }

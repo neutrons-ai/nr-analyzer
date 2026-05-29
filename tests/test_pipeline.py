@@ -327,3 +327,97 @@ def test_pipeline_failed_when_create_model_missing(tmp_path: Path, monkeypatch) 
     )
     assert state.status == "failed"
     assert "error" in state.stage_outputs.get("create_model", {})
+
+
+# ---------------------------------------------------------------------------
+# Resume / .pipeline_state.json
+# ---------------------------------------------------------------------------
+
+
+def _resume_mocks(tmp_path: Path, monkeypatch, counts: dict) -> None:
+    """Patch the three stage workers with call-counting stubs."""
+
+    def fake_partial(set_id, partial_dir, reports_dir, **kwargs):
+        counts["partial"] = counts.get("partial", 0) + 1
+        return None  # no issues -> gate passes
+
+    def fake_create_model(spec):
+        counts["create"] = counts.get("create", 0) + 1
+        script = tmp_path / f"{spec.model_name}.py"
+        script.write_text("# stub\n")
+        return script
+
+    def fake_run_fit(script, results_root, reports_root, tag, **kwargs):
+        counts["fit"] = counts.get("fit", 0) + 1
+        (results_root / tag).mkdir(parents=True, exist_ok=True)
+        return 0, results_root / tag
+
+    monkeypatch.setattr(pl, "_run_partial_assessment_for_set", fake_partial)
+    monkeypatch.setattr(pl, "_run_create_model", fake_create_model)
+    monkeypatch.setattr(pl, "_run_fit", fake_run_fit)
+
+
+def _run_kwargs(tmp_path: Path) -> dict:
+    return dict(
+        results_root=str(tmp_path / "results"),
+        reports_root=str(tmp_path / "reports"),
+        reduction_gate=False,
+        skip_aure_eval=True,
+    )
+
+
+def test_pipeline_resume_skips_completed_stages(tmp_path: Path, monkeypatch) -> None:
+    counts: dict = {}
+    _resume_mocks(tmp_path, monkeypatch, counts)
+    spec = _make_spec(tmp_path, model_name="m1")
+    kw = _run_kwargs(tmp_path)
+
+    s1 = pl.run_pipeline(spec, **kw)
+    assert s1.status == "ok"
+    assert counts == {"partial": 1, "create": 1, "fit": 1}
+
+    state_file = tmp_path / "reports" / "sample_m1" / ".pipeline_state.json"
+    assert state_file.exists()
+    completed = set(json.loads(state_file.read_text())["completed_stages"])
+    assert {"partial", "create_model", "fit"} <= completed
+
+    # Second run with the cache present must short-circuit every stage.
+    before = dict(counts)
+    s2 = pl.run_pipeline(spec, **kw)
+    assert s2.status == "ok"
+    assert counts == before  # nothing re-ran
+
+
+def test_pipeline_force_reruns_all_stages(tmp_path: Path, monkeypatch) -> None:
+    counts: dict = {}
+    _resume_mocks(tmp_path, monkeypatch, counts)
+    spec = _make_spec(tmp_path, model_name="m1")
+    kw = _run_kwargs(tmp_path)
+
+    pl.run_pipeline(spec, **kw)
+    before = dict(counts)
+    pl.run_pipeline(spec, force=True, **kw)
+
+    assert counts["create"] == before["create"] + 1
+    assert counts["fit"] == before["fit"] + 1
+    assert counts["partial"] == before["partial"] + 1
+
+
+def test_pipeline_resume_regenerates_stale_cached_script(tmp_path: Path, monkeypatch) -> None:
+    counts: dict = {}
+    _resume_mocks(tmp_path, monkeypatch, counts)
+    spec = _make_spec(tmp_path, model_name="m1")
+    kw = _run_kwargs(tmp_path)
+
+    pl.run_pipeline(spec, **kw)
+    assert counts["create"] == 1
+    before_fit = counts["fit"]
+
+    # The cached model script vanishes -> resume must regenerate it even though
+    # the create_model stage is marked complete (exercises the stale-cache branch).
+    (tmp_path / "m1.py").unlink()
+
+    s2 = pl.run_pipeline(spec, **kw)
+    assert s2.status == "ok"
+    assert counts["create"] == 2          # regenerated
+    assert counts["fit"] == before_fit    # fit already done -> not re-run
