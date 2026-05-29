@@ -102,4 +102,6 @@ ANALYZER_COMBINED_DATA_TEMPLATE=REFL_{set_id}_combined_data_auto.txt
 - A set is built from **parts** (typically 3) measured at different angular settings to cover different Q ranges
 - Parts **overlap** in Q — the overlap quality can be checked with
   the `assess-partial` tool (see the partial-assessment skill)
-- After verifying overlap quality, parts are **combined** into a single reflectivity curve
+- After verifying overlap quality, parts are **combined** into a single
+  reflectivity curve — the reduction normally emits the combined file, or build
+  it from the partials with `assemble-partials <set_id>` (Mantid-free)

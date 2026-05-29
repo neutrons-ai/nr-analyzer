@@ -258,6 +258,17 @@ assess-partial <SET_ID>
 Calculates overlap χ² between adjacent parts. Thresholds: < 1.5 good,
 1.5–3.0 acceptable, > 3.0 investigate.
 
+#### `assemble-partials` — Combine partial segments into a combined R(Q) file
+
+```bash
+assemble-partials <SET_ID>            # -> <combined-dir>/REFL_<SET_ID>_combined_data_auto.txt
+assemble-partials <SET_ID> --scale    # rescale each segment to its predecessor's overlap first
+```
+
+A Mantid-free way to produce the combined file (segments from one reduction are
+usually already consistently scaled, so the default just concatenates and sorts
+by Q). Reports the adjacent-overlap χ². Supports `--json` and `--result-out`.
+
 ### Theta offsets
 
 #### `theta-offset` — Compute angular offsets from NeXus event files

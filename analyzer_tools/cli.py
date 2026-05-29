@@ -80,3 +80,9 @@ def plan_data_cli():
     """Command-line interface for the data planner."""
     from .analysis.plan_data import main
     main()
+
+
+def assemble_partials_cli():
+    """Command-line interface for assembling partial segments into a combined file."""
+    from .analysis.assemble import main
+    main()
