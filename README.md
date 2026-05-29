@@ -265,5 +265,4 @@ that `assess-result` takes the fit-output directory.
 ## Citation
 
 If this project helps your work, please cite via the
-[Zenodo DOI](https://doi.org/10.5281/zenodo.15870378) (badge above) or the
 metadata in [CITATION.cff](CITATION.cff).
