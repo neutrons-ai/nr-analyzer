@@ -1,0 +1,27 @@
+services:
+  # Interactive shell with all tools available (including Mantid reduction)
+  analyzer:
+    platform: linux/amd64
+    build: .
+    volumes:
+      # Mount local data/results directories into the container
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./reports:/app/reports
+      - ./results:/app/results
+    environment:
+      # Prevent Qt from trying to open a display
+      - QT_QPA_PLATFORM=offscreen
+
+  # One-shot test runner
+  test:
+    platform: linux/amd64
+    build: .
+    command: python -m pytest tests/ -v --tb=short
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - QT_QPA_PLATFORM=offscreen
+    profiles:
+      - test

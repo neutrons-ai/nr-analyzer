@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+*.egg-info
+dist
+build
+.pixi
+.pytest_cache
+.coverage
+venv
+.venv
+*.conda
+results
+reports

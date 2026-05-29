@@ -1,0 +1,36 @@
+# Slim image: analyzer-tools CLI only, installed via pip.
+# No pixi, no conda, no Mantid. Reduction commands that require Mantid
+# (`simple-reduction`, `eis-reduce-events`) are not available in this image.
+FROM python:3.12-slim AS base
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# git is required to install aure (and any other VCS pip deps).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy project sources for pip install.
+COPY pyproject.toml README.md .env.example ./
+COPY analyzer_tools/ analyzer_tools/
+
+# Install analyzer-tools and its runtime dependencies.
+RUN pip install --upgrade pip && \
+    pip install .
+
+# Make container runnable as a non-root user.
+RUN chmod og+rwX -R /app
+
+ENV HOME=/root
+
+# Drop straight into a shell on the system Python; the analyzer entry
+# points (analyze-sample, create-model, run-fit, plan-data, …) are on PATH.
+ENTRYPOINT []
+CMD ["bash"]

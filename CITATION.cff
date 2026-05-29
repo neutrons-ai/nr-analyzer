@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: LLM-enabled tools for SNS BL4B data analysis
+message: 'If you use this software, please cite it as below.'
+type: software
+authors:
+  - family-names: Doucet
+    given-names: Mathieu
+    affiliation: Oak Ridge National Laboratory
+    orcid: 'https://orcid.org/0000-0002-5560-6478'
+  - family-names: Urbine
+    given-names: Jennifer
+    affiliation: SLAC
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.15870378
+url: 'https://github.com/mdoucet/analyzer'
+abstract: >-
+  This repository contains tools for analyzing data from the
+  SNS BL4B beamline, utilizing LLMs for tool selection.
+license: BSD-3-Clause
+version: 0.1.2
+date-released: '2025-07-30'

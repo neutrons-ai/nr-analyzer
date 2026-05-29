@@ -1,0 +1,89 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nr-analyzer"
+version = "0.2.0"
+description = "Neutron reflectometry reduce/plan/analyze/assess tools"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    {name = "Mat Doucet"},
+]
+keywords = ["neutron", "reflectometry", "analysis", "fitting"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "refl1d>1.0.0",
+    "aure[all] @ git+https://github.com/neutrons-ai/aure.git@main",
+    "bumps",
+    "click",
+    "scipy",
+    "h5py",
+    "pyyaml",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+]
+reduction = [
+    "mantid",
+    "lr_reduction",
+]
+
+[project.urls]
+Homepage = "https://github.com/neutrons-ai/nr-analyzer"
+Repository = "https://github.com/neutrons-ai/nr-analyzer"
+
+[project.scripts]
+analyzer-tools = "analyzer_tools.cli:main"
+run-fit = "analyzer_tools.cli:run_fit_cli"
+assess-partial = "analyzer_tools.cli:assess_partial_cli"
+assess-result = "analyzer_tools.cli:result_assessor_cli"
+create-model = "analyzer_tools.cli:create_model_cli"
+theta-offset = "analyzer_tools.cli:theta_offset_cli"
+analyzer-batch = "analyzer_tools.cli:batch_cli"
+simple-reduction = "analyzer_tools.cli:simple_reduction_cli"
+analyze-sample = "analyzer_tools.cli:analyze_sample_cli"
+check-llm = "analyzer_tools.cli:check_llm_cli"
+plan-data = "analyzer_tools.cli:plan_data_cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["analyzer_tools*"]
+
+[tool.setuptools.package-data]
+"analyzer_tools" = ["*.ini"]
+"analyzer_tools.skills" = ["*/SKILL.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --cov=analyzer_tools --cov-fail-under=33"
+
+[tool.coverage.run]
+source = ["analyzer_tools"]
+omit = ["*/tests/*", "*/test_*"]
+
+[tool.coverage.report]
+fail_under = 36
+show_missing = true
+skip_covered = false
