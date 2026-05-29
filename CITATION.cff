@@ -15,9 +15,6 @@ authors:
   - family-names: McDonnell
     given-names: Marshall
     affiliation: Oak Ridge National Laboratory
-identifiers:
-  - type: doi
-    value: 10.5281/zenodo.15870378
 url: 'https://github.com/neutrons-ai/nr-analyzer'
 abstract: >-
   This repository contains tools for analyzing data from the

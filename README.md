@@ -1,8 +1,6 @@
 # Neutron Reflectometry Analysis Tools
 
 [![Python Tests](https://github.com/neutrons-ai/nr-analyzer/actions/workflows/python-test.yml/badge.svg)](https://github.com/neutrons-ai/nr-analyzer/actions/workflows/python-test.yml)
-[![codecov](https://codecov.io/gh/neutrons-ai/nr-analyzer/branch/main/graph/badge.svg)](https://codecov.io/gh/neutrons-ai/nr-analyzer)
-[![DOI](https://zenodo.org/badge/1013265177.svg)](https://doi.org/10.5281/zenodo.15870378)
 
 A toolbox of small, well-named CLI tools that an LLM agent (or a human) can
 chain together to analyze neutron reflectometry data end-to-end: partial
