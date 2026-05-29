@@ -13,7 +13,7 @@
 # Every job must have:
 #   name  - unique label (used for logging and --jobs filter)
 #   tool  - one of the CLI entry points (run-fit, assess-partial,
-#           assess-result, theta-offset, eis-intervals, etc.)
+#           assess-result, create-model, theta-offset, simple-reduction, etc.)
 #   args  - list of positional and --flag arguments, exactly as you
 #           would type them on the command line
 #

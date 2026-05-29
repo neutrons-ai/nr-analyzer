@@ -11,6 +11,12 @@ data quality checks → model generation → refl1d fit → report. Built around
 for the math, with optional [AuRE](https://github.com/neutrons-ai/aure) for
 LLM-driven model creation and fit evaluation.
 
+> **Scope.** This package is the **reduce → plan → analyze → assess** subset of
+> the reflectometry toolbox, extracted from
+> [`mdoucet/analyzer`](https://github.com/mdoucet/analyzer). The time-resolved
+> (EIS) reduction tools and the Iceberg/Parquet data-packaging utilities are
+> intentionally left out and remain in that source repository.
+
 ## Quick Start
 
 1. Install with `pip install -e ".[dev]"` (see [Installation](#installation)).
@@ -96,9 +102,9 @@ pip install -e ".[dev]"
 ```
 
 This gives you all analysis, fitting, and pipeline tools. The Mantid-based
-reduction command (`simple-reduction`) requires Mantid
-and are skipped gracefully when it isn't installed; use Docker for the
-full stack — see [docs/docker.md](docs/docker.md).
+reduction command (`simple-reduction`) requires Mantid and is skipped
+gracefully when it isn't installed; use Docker for the full stack — see
+[docs/docker.md](docs/docker.md).
 
 LLM features (`create-model` Mode B, `aure evaluate` augmentation) require
 [AuRE](https://github.com/neutrons-ai/aure) installed in the same
@@ -251,10 +257,8 @@ that `assess-result` takes the fit-output directory.
 | Partial-data overlap checks | [analyzer_tools/skills/partial-assessment/SKILL.md](analyzer_tools/skills/partial-assessment/SKILL.md) |
 | Theta-offset calculation | [analyzer_tools/skills/theta-offset/SKILL.md](analyzer_tools/skills/theta-offset/SKILL.md) |
 | Data arrival planner (`plan-data`) | [analyzer_tools/skills/plan-data/SKILL.md](analyzer_tools/skills/plan-data/SKILL.md) |
-| Time-resolved reduction | [analyzer_tools/skills/time-resolved/SKILL.md](analyzer_tools/skills/time-resolved/SKILL.md), [docs/time-resolved-eis.md](docs/time-resolved-eis.md) |
 | Data layout & file formats | [analyzer_tools/skills/data-organization/SKILL.md](analyzer_tools/skills/data-organization/SKILL.md) |
 | Available refl1d model files | [analyzer_tools/skills/models/SKILL.md](analyzer_tools/skills/models/SKILL.md) |
-| Time-resolved / Iceberg packaging | [analyzer_tools/skills/data-packaging/SKILL.md](analyzer_tools/skills/data-packaging/SKILL.md) |
 | Reflectometry primer | [analyzer_tools/skills/reflectometry-basics/SKILL.md](analyzer_tools/skills/reflectometry-basics/SKILL.md) |
 | Configuration / `.env` cascade | [docs/configuration.md](docs/configuration.md) |
 | Batch manifests (`analyzer-batch`) | [Batch processing](#batch-processing), [manifest.example.yaml](manifest.example.yaml) |
