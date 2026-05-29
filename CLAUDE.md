@@ -14,9 +14,9 @@ Pick the highest-level CLI that already covers the task — don't write a one-of
 - **Many samples** → write one YAML per sample, dispatch with `analyzer-batch manifest.yaml`. Pattern in [README.md](README.md#L153-L213).
 - **A new partial file just arrived** → `plan-data DATA_FILE CONTEXT_FILE` produces a config YAML you can feed straight into `analyze-sample` or `create-model --config`.
 - **Lower-level control** (regenerate a model without re-fitting; refit an existing script with different settings) → call `create-model` / `run-fit` / `assess-result` directly, optionally from an `analyzer-batch` manifest.
-- **Reduction-related work** → `simple-reduction`, `eis-reduce-events`, `eis-intervals`, `theta-offset`, `iceberg-packager`. Mantid-based ones need Docker; see [docs/docker.md](docs/docker.md).
+- **Reduction-related work** → `simple-reduction` (Mantid-based; needs Docker, see [docs/docker.md](docs/docker.md)) and `theta-offset` (Mantid-free incident-angle offset).
 
-For any tool, `analyzer-tools --help-tool <name>` is the canonical signature. The full registry is `analyzer-tools --list-tools` (source: [analyzer_tools/registry.py](analyzer_tools/registry.py)). Workflow-level guidance is in the skill files — pull the relevant one into context with `@analyzer_tools/skills/<name>/SKILL.md` rather than guessing.
+For any tool, run it with `--help` for the canonical signature. The installed commands are the `[project.scripts]` entries in [pyproject.toml](pyproject.toml). Workflow-level guidance is in the skill files — pull the relevant one into context with `@analyzer_tools/skills/<name>/SKILL.md` rather than guessing.
 
 ### Reflectometry data conventions
 - Combined reflectivity files: 4 columns `Q, R, dR, dQ`, plotted as `R vs Q` with `dR` as error bars.
@@ -28,10 +28,10 @@ For any tool, `analyzer-tools --help-tool <name>` is the canonical signature. Th
 
 This is the more common case in this repo. Conventions:
 
-- **Tool layout**: every CLI is registered three places that must stay in sync:
-  1. The implementation module under `analyzer_tools/` (or `analyzer_tools/analysis/`, `analyzer_tools/reduction/`).
-  2. A wrapper in [analyzer_tools/cli.py](analyzer_tools/cli.py) (e.g. `plan_data_cli`).
-  3. A `[project.scripts]` entry in [pyproject.toml](pyproject.toml) and a `ToolInfo` row in [analyzer_tools/registry.py](analyzer_tools/registry.py).
+- **Tool layout**: every CLI is registered in three places that must stay in sync:
+  1. The implementation module under `analyzer_tools/` (or `analyzer_tools/analysis/`, `analyzer_tools/reduction/`), exposing a Click `main()`.
+  2. A thin wrapper in [analyzer_tools/cli.py](analyzer_tools/cli.py) (e.g. `plan_data_cli`).
+  3. A `[project.scripts]` entry in [pyproject.toml](pyproject.toml). (Batch-dispatchable tools also need a `TOOL_COMMANDS` entry in [analyzer_tools/batch.py](analyzer_tools/batch.py).)
 - **CLIs use Click.** New options follow the existing pattern: long-form `--option`, sensible defaults shown, mutually-exclusive options validated explicitly with `click.UsageError`.
 - **Skills are package data, not docs.** They live in [analyzer_tools/skills/](analyzer_tools/skills/) and ship inside the wheel via `[tool.setuptools.package-data]`. The runtime loader is [analyzer_tools/analysis/plan_data.py](analyzer_tools/analysis/plan_data.py) `load_skills()`. To iterate on skill text without reinstalling, set `ANALYZER_SKILLS_DIR=/path/to/overrides` (per-skill `<name>/SKILL.md`); the loader prefers it over the packaged copy.
 - **Tests live in [tests/](tests/)** and run with `pytest`. The default invocation has a coverage floor that's noisy mid-edit; for fast iteration use:
@@ -46,7 +46,7 @@ Skills are the agent-facing reference; stale skills produce silent wrong behavio
 
 1. Update the matching skill in [analyzer_tools/skills/](analyzer_tools/skills/).
 2. Update the single-file summary [analyzer_tools/skills/distributable/SKILL.md](analyzer_tools/skills/distributable/SKILL.md) — external users and downstream repos rely on it.
-3. If a tool was added or removed entirely, also update [analyzer_tools/registry.py](analyzer_tools/registry.py) and `[project.scripts]` in [pyproject.toml](pyproject.toml).
+3. If a tool was added or removed entirely, also update `[project.scripts]` in [pyproject.toml](pyproject.toml) and, if it's batch-dispatchable, `TOOL_COMMANDS` in [analyzer_tools/batch.py](analyzer_tools/batch.py).
 4. If quality thresholds, column formats, or file-naming conventions changed, also touch [analyzer_tools/skills/data-organization/](analyzer_tools/skills/data-organization/) and [analyzer_tools/skills/fitting/](analyzer_tools/skills/fitting/).
 
 ## Skills index
@@ -58,8 +58,6 @@ Skills are the agent-facing reference; stale skills produce silent wrong behavio
 | [fitting](analyzer_tools/skills/fitting/) | `create-model` → `run-fit` → `assess-result` |
 | [partial-assessment](analyzer_tools/skills/partial-assessment/) | Overlap-χ² check on partial files |
 | [theta-offset](analyzer_tools/skills/theta-offset/) | Single & batch theta-offset calculation |
-| [time-resolved](analyzer_tools/skills/time-resolved/) | EIS interval extraction & event reduction |
-| [data-packaging](analyzer_tools/skills/data-packaging/) | Iceberg/Parquet packaging |
 | [plan-data](analyzer_tools/skills/plan-data/) | New-data-file planner |
 | [data-organization](analyzer_tools/skills/data-organization/) | Layout, naming, column formats |
 | [models](analyzer_tools/skills/models/) | Available refl1d model files |

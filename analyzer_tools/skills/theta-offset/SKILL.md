@@ -7,7 +7,7 @@ description: >
   USE FOR: calculating theta offsets from NeXus event files, building offset
   CSV logs, batch-processing multiple runs.
   DO NOT USE FOR: fitting reflectivity data (see fitting skill), reducing
-  neutron events (see time-resolved skill).
+  neutron events (use the simple-reduction tool; Mantid-based).
 ---
 
 # Theta Offset Calculation

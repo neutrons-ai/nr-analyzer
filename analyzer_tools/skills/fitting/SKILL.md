@@ -5,8 +5,8 @@ description: >
   evaluate the result.
   USE FOR: fitting reflectivity data, evaluating fit quality, iterating on a model.
   DO NOT USE FOR: partial data quality checks (see partial-assessment skill),
-  data reduction (see time-resolved skill), or end-to-end pipelines for a
-  single sample (see pipeline skill — `analyze-sample`).
+  data reduction (use the simple-reduction tool; Mantid-based), or end-to-end
+  pipelines for a single sample (see pipeline skill — `analyze-sample`).
 ---
 
 # Reflectivity Fitting Workflow
