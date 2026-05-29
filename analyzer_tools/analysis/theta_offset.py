@@ -8,6 +8,7 @@ NR_Reduction._fit_and_calculate_theta() without requiring lr_reduction.
 
 import csv
 import datetime
+import json
 import os
 import xml.etree.ElementTree as ET
 from typing import Optional
@@ -542,7 +543,9 @@ def _resolve_db_path(db_run_id: str, search_dirs: list) -> str:
               help="Append result to this CSV file (created if missing).")
 @click.option("--output-dir", "output_dir", type=click.Path(file_okay=False), default=None,
               help="Directory for report PNGs and log CSV (created if missing).")
-def main(nexus, db_path, template_path, ymin, ymax, xmin, xmax, peak_type, log_file, output_dir):
+@click.option("--json", "as_json", is_flag=True,
+              help="Print the result as JSON to stdout (suppresses the human-readable summary).")
+def main(nexus, db_path, template_path, ymin, ymax, xmin, xmax, peak_type, log_file, output_dir, as_json):
     """Compute the theta offset for a NeXus run relative to a direct-beam file.
 
     Provide either --db (explicit DB file) or --template (auto-resolve DB from
@@ -564,22 +567,24 @@ def main(nexus, db_path, template_path, ymin, ymax, xmin, xmax, peak_type, log_f
         db_run_id = mapping[run_id]
         search_dirs = [os.path.dirname(nexus), os.getcwd()]
         db_path = _resolve_db_path(db_run_id, search_dirs)
-        click.echo(f"Template:       {os.path.basename(template_path)}")
-        click.echo(f"DB run:         {db_run_id} → {os.path.basename(db_path)}")
+        if not as_json:
+            click.echo(f"Template:       {os.path.basename(template_path)}")
+            click.echo(f"DB run:         {db_run_id} → {os.path.basename(db_path)}")
 
     result = compute_theta_offset(
         nexus, db_path, ymin=ymin, ymax=ymax,
         xmin=xmin, xmax=xmax, peak_type=peak_type,
     )
 
-    click.echo(f"Run:            {result['run_name']}")
-    click.echo(f"DB pixel:       {result['db_pixel']:.2f}")
-    click.echo(f"Fitted pixel:   {result['rb_pixel']:.2f}  (delta = {result['delta_pixel']:+.2f} px)")
-    click.echo(f"Theta (motor):  {result['theta_motor']:.4f}°")
-    click.echo(f"Theta (calc):   {result['theta_calc']:.4f}°")
-    click.echo(f"Offset:         {result['offset']:+.4f}°")
-    click.echo(f"Mean λ:         {result['mean_wl']:.2f} Å")
-    click.echo(f"Gravity Δθ:     {result['gravity_dtheta']:+.6f}°  (at mean λ)")
+    if not as_json:
+        click.echo(f"Run:            {result['run_name']}")
+        click.echo(f"DB pixel:       {result['db_pixel']:.2f}")
+        click.echo(f"Fitted pixel:   {result['rb_pixel']:.2f}  (delta = {result['delta_pixel']:+.2f} px)")
+        click.echo(f"Theta (motor):  {result['theta_motor']:.4f}°")
+        click.echo(f"Theta (calc):   {result['theta_calc']:.4f}°")
+        click.echo(f"Offset:         {result['offset']:+.4f}°")
+        click.echo(f"Mean λ:         {result['mean_wl']:.2f} Å")
+        click.echo(f"Gravity Δθ:     {result['gravity_dtheta']:+.6f}°  (at mean λ)")
 
     if output_dir is not None:
         os.makedirs(output_dir, exist_ok=True)
@@ -588,14 +593,20 @@ def main(nexus, db_path, template_path, ymin, ymax, xmin, xmax, peak_type, log_f
         if output_dir is not None and not os.path.isabs(log_file):
             log_file = os.path.join(output_dir, log_file)
         log_result(result, log_file, db_path)
-        click.echo(f"Logged to:      {log_file}")
+        if not as_json:
+            click.echo(f"Logged to:      {log_file}")
 
     # Save diagnostic plot
     if output_dir is not None:
         run_stem = os.path.splitext(os.path.splitext(result["run_name"])[0])[0]
         report_path = os.path.join(output_dir, f"{run_stem}_theta_offset.png")
         save_report(result, report_path)
-        click.echo(f"Report:         {report_path}")
+        if not as_json:
+            click.echo(f"Report:         {report_path}")
+
+    if as_json:
+        public = {k: v for k, v in result.items() if not k.startswith("_")}
+        click.echo(json.dumps(public))
 
 
 if __name__ == "__main__":

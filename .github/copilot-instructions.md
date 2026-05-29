@@ -107,6 +107,7 @@ behavior in `plan-data` and downstream callers. After any CLI change:
 | [data-organization](../analyzer_tools/skills/data-organization/) | Layout, naming, column formats |
 | [models](../analyzer_tools/skills/models/) | Available refl1d model files |
 | [reflectometry-basics](../analyzer_tools/skills/reflectometry-basics/) | Domain primer (Q, R, SLD, χ²) |
+| [tool-output](../analyzer_tools/skills/tool-output/) | `--json` + `ndip-tool-result` manifest contracts |
 | [distributable](../analyzer_tools/skills/distributable/) | Single-file summary for external repos |
 
 ## Practical tips for this repo
